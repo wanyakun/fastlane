@@ -2,12 +2,12 @@ default_platform(:ios)
 
 platform :ios do
 
-	MASTER_PATH = "https://github.com/CocoaPods/Specs.git"
-	PRIVATE_PATH = "https://github.com/wanyakun/Specs.git"
+  MASTER_PATH = "https://github.com/CocoaPods/Specs.git"
+  PRIVATE_PATH = "https://github.com/wanyakun/Specs.git"
 
-	SOURCES = [MASTER_PATH, PRIVATE_PATH]
+  SOURCES = [MASTER_PATH, PRIVATE_PATH]
 
-	ENV["LANG"] = "en_US.UTF-8"
+  ENV["LANG"] = "en_US.UTF-8"
   ENV["LC_ALL"] = "en_US.UTF-8"
   ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = "-t DAV"
   ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "1000"
@@ -18,7 +18,7 @@ platform :ios do
 
   desc "同步开发者证书"
   lane :yk_syncer do |options|
-  	git_url = options[:git_url]
+    git_url = options[:git_url]
     app_identifier = options[:app_identifier]
     git_branch = "master"
     if options[:git_branch]
@@ -31,14 +31,14 @@ platform :ios do
     if app_identifier.eql?('*') || app_identifier.empty?
       # 不处理
     else
-      types.each { |type| 
+      types.each { |type|
         match(git_url: git_url,
-          type: type,
-          app_identifier: app_identifier,
-          git_branch: git_branch,
-          username: username,
-          readonly: true)
-      } 
+              type: type,
+              app_identifier: app_identifier,
+              git_branch: git_branch,
+              username: username,
+              readonly: true)
+      }
     end
   end
 
@@ -71,16 +71,16 @@ platform :ios do
 
   desc "发布源码组件"
   lane :yk_component_release_src do |options|
-  	target_version = options[:version]
-		project = options[:project]
-		path = "#{project}.podspec"
-		git_pull
+    target_version = options[:version]
+    project = options[:project]
+    path = "#{project}.podspec"
+    git_pull
 
-		version_bump_podspec(path: path, version_number: target_version)
-		yk_pod_install
+    version_bump_podspec(path: path, version_number: target_version)
+    yk_pod_install
 
-		analyze = options[:ignore_analyze]
-		unless analyze
+    analyze = options[:ignore_analyze]
+    unless analyze
       yk_code_analyze(project: project)
       expand_path = File.expand_path("..", Dir.pwd)
       analyze_report_file = "#{expand_path}/infer-out/report.json"
@@ -88,7 +88,7 @@ platform :ios do
 
       analyze_bugs = JSON.parse(analyze_report_json)
       if analyze_bugs.size > 0
-          UI.abort_with_message!("The source code has #{analyze_bugs.size} issue!, please see the bugs.txt in infer-out folder!")
+        UI.abort_with_message!("The source code has #{analyze_bugs.size} issue!, please see the bugs.txt in infer-out folder!")
       end
     end
 
@@ -98,11 +98,11 @@ platform :ios do
     end
 
     yk_pod_lib_lint(verbose: false, allow_warnings: true, sources: SOURCES, use_bundle_exec: true, fail_fast: true, skip_import_validation: skip_import_validation)
-		yk_git_commit_all(message: "Bump version to #{target_version}")
-		add_git_tag(tag: target_version)
-		push_to_git_remote
+    yk_git_commit_all(message: "Bump version to #{target_version}")
+    add_git_tag(tag: target_version)
+    push_to_git_remote
 
-		begin
+    begin
       yk_pod_push(path: path, repo: "yk", allow_warnings: true, sources: SOURCES, skip_import_validation: skip_import_validation)
     rescue Exception => e
       yk_remove_tag(tag: target_version)
@@ -132,7 +132,7 @@ platform :ios do
 
       analyze_bugs = JSON.parse(analyze_report_json)
       if analyze_bugs.size > 0
-          UI.abort_with_message!("The source code has #{analyze_bugs.size} issue!, please see the bugs.txt in infer-out folder!")
+        UI.abort_with_message!("The source code has #{analyze_bugs.size} issue!, please see the bugs.txt in infer-out folder!")
       end
     end
 
@@ -144,7 +144,7 @@ platform :ios do
     yk_pod_lib_lint(verbose: false, allow_warnings: true, sources: SOURCES, use_bundle_exec: true, fail_fast: true, use_libraries: true, skip_import_validation: skip_import_validation)
 
     yk_build_static_lib(project: project)
-    
+
     yk_git_commit_all(message: "Bump version to #{target_version}")
     add_git_tag(tag: target_version)
     push_to_git_remote
@@ -167,16 +167,16 @@ platform :ios do
 
   desc "发布Framework组件"
   lane :yk_component_release_fmk do |options|
-  	target_version = options[:version]
-		project = options[:project]
-		fmk_path = "fmk/#{project}.podspec"
+    target_version = options[:version]
+    project = options[:project]
+    fmk_path = "fmk/#{project}.podspec"
 
-		git_pull
+    git_pull
 
-		version_bump_podspec(path: fmk_path, version_number: target_version)
-		yk_pod_install
+    version_bump_podspec(path: fmk_path, version_number: target_version)
+    yk_pod_install
 
-		analyze = options[:ignore_analyze]
+    analyze = options[:ignore_analyze]
     unless analyze
       yk_code_analyze(project: project)
       expand_path = File.expand_path("..", Dir.pwd)
@@ -185,7 +185,7 @@ platform :ios do
 
       analyze_bugs = JSON.parse(analyze_report_json)
       if analyze_bugs.size > 0
-          UI.abort_with_message!("The source code has #{analyze_bugs.size} issue!, please see the bugs.txt in infer-out folder!")
+        UI.abort_with_message!("The source code has #{analyze_bugs.size} issue!, please see the bugs.txt in infer-out folder!")
       end
     end
 
@@ -194,13 +194,13 @@ platform :ios do
       skip_import_validation = options[:skip_import_validation]
     end
 
-		yk_pod_lib_lint(verbose: false, allow_warnings: true, sources: SOURCES, use_bundle_exec: true, fail_fast: true, skip_import_validation: skip_import_validation)
+    yk_pod_lib_lint(verbose: false, allow_warnings: true, sources: SOURCES, use_bundle_exec: true, fail_fast: true, skip_import_validation: skip_import_validation)
 
-		yk_build_framework(project: project)
-		
-		yk_git_commit_all(message: "Bump version to #{target_version}")
-		add_git_tag(tag: target_version)
-		push_to_git_remote
+    yk_build_framework(project: project)
+
+    yk_git_commit_all(message: "Bump version to #{target_version}")
+    add_git_tag(tag: target_version)
+    push_to_git_remote
 
     begin
       component_path = File.expand_path("..", Dir.pwd)
@@ -219,153 +219,153 @@ platform :ios do
   end
 
   desc "应用构建"
-	lane :yk_app_build do |options| 
-	    app_identifier    				= options[:app_identifier]
-      app_extension_identifier 	= options[:app_extension_identifier]
-	    scheme            				= options[:scheme]
-	    derived_data_path 				= options[:derived_data_path]
-	    output_directory  				= options[:output_directory]
-	    output_name       				= options[:output_name]
-	    build_number 	  					= options[:build_number]
-	    xcodeproj		  						= options[:xcodeproj]
-	    testflight 								= options[:testflight]
-      use_match 								= options[:use_match]
+  lane :yk_app_build do |options|
+    app_identifier            = options[:app_identifier]
+    app_extension_identifier  = options[:app_extension_identifier]
+    scheme                    = options[:scheme]
+    derived_data_path         = options[:derived_data_path]
+    output_directory          = options[:output_directory]
+    output_name               = options[:output_name]
+    build_number              = options[:build_number]
+    xcodeproj                 = options[:xcodeproj]
+    testflight                = options[:testflight]
+    use_match                 = options[:use_match]
 
-	    configuration = 'Release'
-	    if options[:configuration]
-	    	configuration = options[:configuration]
-	    end
-	    
-	    export_method = 'ad-hoc'
-	    if testflight
-	    	export_method = 'app-store'
-        configuration = 'Release'
-	    end
+    configuration = 'Release'
+    if options[:configuration]
+      configuration = options[:configuration]
+    end
 
-      status = 'success'
-      begin
-        cocoapods(clean: true, repo_update: true)
+    export_method = 'ad-hoc'
+    if testflight
+      export_method = 'app-store'
+      configuration = 'Release'
+    end
 
-        if use_match
-        	cer_git_url = options[:cer_git_url]
-          cer_git_branch = 'master'
-          if options[:cer_git_branch]
-            cer_git_branch = options[:cer_git_branch]
-          end
-          yk_syncer(
-          	git_url: cer_git_url,
-            app_identifier: app_identifier,
-            username:ENV['FASTLANE_USER'],
-            git_branch:cer_git_branch)
+    status = 'success'
+    begin
+      cocoapods(clean: true, repo_update: true)
 
-          if app_extension_identifier
-            yk_syncer(
-          	git_url: cer_git_url,
-            app_identifier: app_extension_identifier,
-            username:ENV['FASTLANE_USER'],
-            git_branch:cer_git_branch)
-          end
-        else
-          begin
-            cert(username: ENV['FASTLANE_USER'])
-            if testflight
-              sigh(username: ENV['FASTLANE_USER'], app_identifier: app_identifier)
-            else
-              sigh(username: ENV['FASTLANE_USER'], app_identifier: app_identifier, adhoc: true)
-            end
-          rescue => e
-            puts e.message
-          end
+      if use_match
+        cer_git_url = options[:cer_git_url]
+        cer_git_branch = 'master'
+        if options[:cer_git_branch]
+          cer_git_branch = options[:cer_git_branch]
         end
-
-
-        increment_build_number(build_number: build_number, xcodeproj: xcodeproj)
-
-        include_bitcode = false
-        profile_name = "match AdHoc #{app_identifier}"
-        if testflight
-          include_bitcode = true
-          profile_name = "match AppStore #{app_identifier}"
-        end
-
-        provisioningProfiles = {
-          "#{app_identifier}" => "#{profile_name}"
-        }
+        yk_syncer(
+          git_url: cer_git_url,
+          app_identifier: app_identifier,
+          username:ENV['FASTLANE_USER'],
+        git_branch:cer_git_branch)
 
         if app_extension_identifier
-          extension_profile_name = "match AdHoc #{app_extension_identifier}"
+          yk_syncer(
+            git_url: cer_git_url,
+            app_identifier: app_extension_identifier,
+            username:ENV['FASTLANE_USER'],
+          git_branch:cer_git_branch)
+        end
+      else
+        begin
+          cert(username: ENV['FASTLANE_USER'])
           if testflight
-            extension_profile_name = "match AppStore #{app_extension_identifier}"
+            sigh(username: ENV['FASTLANE_USER'], app_identifier: app_identifier)
+          else
+            sigh(username: ENV['FASTLANE_USER'], app_identifier: app_identifier, adhoc: true)
           end
-          provisioningProfiles = {
-            "#{app_identifier}" => "#{profile_name}",
-            "#{app_extension_identifier}" => "#{extension_profile_name}"
-          }
+        rescue => e
+          puts e.message
         end
+      end
 
-        export_options = {
-          compileBitcode: include_bitcode,
-          uploadBitcode: include_bitcode,
-          provisioningProfiles: provisioningProfiles
+
+      increment_build_number(build_number: build_number, xcodeproj: xcodeproj)
+
+      include_bitcode = false
+      profile_name = "match AdHoc #{app_identifier}"
+      if testflight
+        include_bitcode = true
+        profile_name = "match AppStore #{app_identifier}"
+      end
+
+      provisioningProfiles = {
+        "#{app_identifier}" => "#{profile_name}"
+      }
+
+      if app_extension_identifier
+        extension_profile_name = "match AdHoc #{app_extension_identifier}"
+        if testflight
+          extension_profile_name = "match AppStore #{app_extension_identifier}"
+        end
+        provisioningProfiles = {
+          "#{app_identifier}" => "#{profile_name}",
+          "#{app_extension_identifier}" => "#{extension_profile_name}"
         }
-
-        unlock_keychain(
-          path: ENV['MAC_KEYCHAIN_PATH'],
-          password:ENV['MAC_USER_PASSWORD']
-        )
-        if use_match
-          gym(
-            scheme: scheme, 
-            clean: true, 
-            configuration: configuration, 
-            derived_data_path: derived_data_path,
-            output_directory: output_directory, 
-            output_name: output_name, 
-            include_bitcode: include_bitcode,
-            export_method: export_method,
-            export_options: export_options,
-            export_xcargs: "-allowProvisioningUpdates"
-          )
-        else
-          gym(
-            scheme: scheme, 
-            clean: true, 
-            configuration: configuration, 
-            derived_data_path: derived_data_path,
-            output_directory: output_directory, 
-            output_name: output_name, 
-            include_bitcode: include_bitcode,
-            export_method: export_method,
-            export_xcargs: "-allowProvisioningUpdates"
-          )
-        end
-      rescue
-        status = 'failed'
-      ensure
-      	# 此处可以增加应用构建回调，集成到构建系统中
-        if status == 'failed'
-          UI.abort_with_message!("The building has error!, please see the deatail above!")
-        end
       end
 
-      manual_publish = options[:manual_publish]
-      unless manual_publish
-        changelog = "build #{configuration} package"
-        package = "#{output_directory}/#{output_name}"
-        yk_app_publish(
-          pid: options[:pid],
-          ip: options[:ipapkserver_ip],
-          port: options[:ipapkserver_port],
-          testflight: testflight, 
-          changelog: changelog,
-          package: package 
+      export_options = {
+        compileBitcode: include_bitcode,
+        uploadBitcode: include_bitcode,
+        provisioningProfiles: provisioningProfiles
+      }
+
+      unlock_keychain(
+        path: ENV['MAC_KEYCHAIN_PATH'],
+        password:ENV['MAC_USER_PASSWORD']
+      )
+      if use_match
+        gym(
+          scheme: scheme,
+          clean: true,
+          configuration: configuration,
+          derived_data_path: derived_data_path,
+          output_directory: output_directory,
+          output_name: output_name,
+          include_bitcode: include_bitcode,
+          export_method: export_method,
+          export_options: export_options,
+          export_xcargs: "-allowProvisioningUpdates"
+        )
+      else
+        gym(
+          scheme: scheme,
+          clean: true,
+          configuration: configuration,
+          derived_data_path: derived_data_path,
+          output_directory: output_directory,
+          output_name: output_name,
+          include_bitcode: include_bitcode,
+          export_method: export_method,
+          export_xcargs: "-allowProvisioningUpdates"
         )
       end
-	end
+    rescue
+      status = 'failed'
+    ensure
+      # 此处可以增加应用构建回调，集成到构建系统中
+      if status == 'failed'
+        UI.abort_with_message!("The building has error!, please see the deatail above!")
+      end
+    end
 
-	desc "应用发布到内测ipapkserver或者TestFlight"
+    manual_publish = options[:manual_publish]
+    unless manual_publish
+      changelog = "build #{configuration} package"
+      package = "#{output_directory}/#{output_name}"
+      yk_app_publish(
+        pid: options[:pid],
+        ip: options[:ipapkserver_ip],
+        port: options[:ipapkserver_port],
+        testflight: testflight,
+        changelog: changelog,
+        package: package
+      )
+    end
+  end
+
+  desc "应用发布到内测ipapkserver或者TestFlight"
   lane :yk_app_publish do |options|
-  	pid = options[:pid]
+    pid = options[:pid]
     testflight = options[:testflight]
     package = options[:package]
     changelog = options[:changelog]
@@ -375,14 +375,14 @@ platform :ios do
         password:ENV['MAC_USER_PASSWORD']
       )
       pilot(
-        # distribute_external: true, 
-        ipa: package, 
+        # distribute_external: true,
+        ipa: package,
         changelog: changelog,
         skip_waiting_for_build_processing: true
       )
     else
-	    ip = options[:ip]
-	    port = options[:port]
+      ip = options[:ip]
+      port = options[:port]
       yk_publish_ipapkserver(
         ip: ip,
         port: port,
