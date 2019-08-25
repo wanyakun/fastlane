@@ -1,0 +1,82 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+
+	MASTER_PATH = "https://github.com/CocoaPods/Specs.git"
+	PRIVATE_PATH = "https://github.com/wanyakun/Specs.git"
+
+	SOURCES = [MASTER_PATH, PRIVATE_PATH]
+
+	ENV["LANG"] = "en_US.UTF-8"
+  ENV["LC_ALL"] = "en_US.UTF-8"
+  ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = "-t DAV"
+  ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "1000"
+  ENV["FASTLANE_XCODEBUILD_SETTINGS_RETRIES"] = "1000"
+  # 请在自己使用的Fastfile中或者.env中声明下面两个环境变量
+  # ENV["FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD"] = "xxxx-xxxx-xxx-xxxx"
+  # ENV["FASTLANE_SESSION"] = 'xxxxxxx'
+
+  desc "发布源码组件"
+  lane :yk_component_release_src do
+  	target_version = options[:version]
+		project = options[:project]
+		path = "#{project}.podspec"
+		git_pull
+
+		version_bump_podspec(path: path, version_number: target_version) # 更新 podspec
+		yk_pod_install
+
+		analyze = options[:ignore_analyze]
+		unless analyze
+      yk_code_analyze(project: project)
+      expand_path = File.expand_path("..", Dir.pwd)
+      analyze_report_file = "#{expand_path}/infer-out/report.json"
+      analyze_report_json = File.read(analyze_report_file) if File.exist?(analyze_report_file)
+
+      analyze_bugs = JSON.parse(analyze_report_json)
+      if analyze_bugs.size > 0
+          UI.abort_with_message!("The source code has #{analyze_bugs.size} issue!, please see the bugs.txt in infer-out folder!")
+      end
+    end
+
+    skip_import_validation = false
+    if options[:skip_import_validation]
+      skip_import_validation = options[:skip_import_validation]
+    end
+
+    yk_pod_lib_lint(verbose: false, allow_warnings: true, sources: SOURCES, use_bundle_exec: true, fail_fast: true, skip_import_validation: skip_import_validation)
+		yk_git_commit_all(message: "Bump version to #{target_version}")
+		add_git_tag(tag: target_version)
+		push_to_git_remote
+
+		begin
+      yk_pod_push(path: path, repo: "yk", allow_warnings: true, sources: SOURCES, skip_import_validation: skip_import_validation) # 提交到 CocoaPods
+    rescue Exception => e
+      yk_remove_tag(tag: target_version)
+    else
+      yk_pod_repo_update
+      # 此处可以增加一些api回调，或者slack、腾讯企业微信机器人等
+    end
+  end
+
+
+  desc "Description of what the lane does"
+  lane :custom_lane do
+    # add actions here: https://docs.fastlane.tools/actions
+  end
+end
