@@ -392,4 +392,17 @@ platform :ios do
       )
     end
   end
+
+  desc "从TestFlight选择一个build，发布到appstore"
+  lane :yk_testflight_publish do |options|
+    build_number = options[:build]
+    deliver(
+      force: true,
+      submit_for_review: true,
+      skip_screenshots: true,
+      skip_metadata: true,
+      build_number: build_number,
+      verbose: true
+    )
+  end
 end
