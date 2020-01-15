@@ -1,6 +1,6 @@
 module Fastlane
   module Actions
-    class YkPodLibLitAction < Action
+    class YkPodLibLintAction < Action
       def self.run(params)
         command = []
 
