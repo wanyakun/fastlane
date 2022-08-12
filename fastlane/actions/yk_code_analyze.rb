@@ -16,9 +16,9 @@ module Fastlane
         end
 
         if project
-          infer_command = "infer -- xcodebuild clean build -workspace Example/#{project}.xcworkspace -scheme #{project} -configuration Debug | xcpretty"
+          infer_command = "infer -- xcodebuild clean build -workspace Example/#{project}.xcworkspace -scheme #{project} -configuration Debug --skip-analysis-in-path Example/Pods | xcpretty"
         else
-          infer_command = "infer -- xcodebuild clean build -workspace #{workspace} -scheme #{scheme} -configuration Debug | xcpretty"
+          infer_command = "infer -- xcodebuild clean build -workspace #{workspace} -scheme #{scheme} -configuration Debug --skip-analysis-in-path Example/Pods | xcpretty"
         end
         Actions.sh(infer_command)
       end
