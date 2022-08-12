@@ -92,12 +92,17 @@ platform :ios do
       end
     end
 
+    use_bundle_exec = false
+    if options[:use_bundle_exec]
+      use_bundle_exec = options[:use_bundle_exec]
+    end
+
     skip_import_validation = false
     if options[:skip_import_validation]
       skip_import_validation = options[:skip_import_validation]
     end
 
-    yk_pod_lib_lint(verbose: false, allow_warnings: true, sources: SOURCES, use_bundle_exec: true, fail_fast: true, skip_import_validation: skip_import_validation)
+    yk_pod_lib_lint(verbose: false, allow_warnings: true, sources: SOURCES, use_bundle_exec: use_bundle_exec, fail_fast: true, skip_import_validation: skip_import_validation)
     yk_git_commit_all(message: "Bump version to #{target_version}")
     add_git_tag(tag: target_version)
     push_to_git_remote
@@ -136,12 +141,17 @@ platform :ios do
       end
     end
 
+    use_bundle_exec = false
+    if options[:use_bundle_exec]
+      use_bundle_exec = options[:use_bundle_exec]
+    end
+
     skip_import_validation = false
     if options[:skip_import_validation]
       skip_import_validation = options[:skip_import_validation]
     end
 
-    yk_pod_lib_lint(verbose: false, allow_warnings: true, sources: SOURCES, use_bundle_exec: true, fail_fast: true, use_libraries: true, skip_import_validation: skip_import_validation)
+    yk_pod_lib_lint(verbose: false, allow_warnings: true, sources: SOURCES, use_bundle_exec: use_bundle_exec, fail_fast: true, use_libraries: true, skip_import_validation: skip_import_validation)
 
     yk_build_static_lib(project: project)
 
@@ -189,12 +199,17 @@ platform :ios do
       end
     end
 
+    use_bundle_exec = false
+    if options[:use_bundle_exec]
+      use_bundle_exec = options[:use_bundle_exec]
+    end
+
     skip_import_validation = false
     if options[:skip_import_validation]
       skip_import_validation = options[:skip_import_validation]
     end
 
-    yk_pod_lib_lint(verbose: false, allow_warnings: true, sources: SOURCES, use_bundle_exec: true, fail_fast: true, skip_import_validation: skip_import_validation)
+    yk_pod_lib_lint(verbose: false, allow_warnings: true, sources: SOURCES, use_bundle_exec: use_bundle_exec, fail_fast: true, skip_import_validation: skip_import_validation)
 
     yk_build_framework(project: project)
 
