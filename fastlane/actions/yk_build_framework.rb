@@ -22,7 +22,7 @@ module Fastlane
         build_config = "Release"
 
         # 使用archive构建真机framework
-        archive_command = "xcodebuild clean archive -project #{build_project} -scheme #{build_target} -configuration #{build_config} -sdk iphoneos OBJROOT=#{build_path} SYMROOT=#{build_path} ONLY_ACTIVE_ARCH=NO | xcpretty"
+        archive_command = "xcodebuild clean archive -project #{build_project} -scheme #{build_target} -configuration #{build_config} -sdk iphoneos -destination 'generic/platform=iOS' OBJROOT=#{build_path} SYMROOT=#{build_path} ONLY_ACTIVE_ARCH=NO | xcpretty"
         Actions.sh(archive_command)
 
         # 将真机framework复制到项目根目录
@@ -40,7 +40,7 @@ module Fastlane
         end
 
         # 使用build构建模拟器framework
-        build_command = "xcodebuild clean build -project #{build_project} -scheme #{build_target} -configuration #{build_config} -sdk iphonesimulator OBJROOT=#{build_path} SYMROOT=#{build_path} ONLY_ACTIVE_ARCH=NO | xcpretty"
+        build_command = "xcodebuild clean build -project #{build_project} -scheme #{build_target} -configuration #{build_config} -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' OBJROOT=#{build_path} SYMROOT=#{build_path} ONLY_ACTIVE_ARCH=NO | xcpretty"
         Actions.sh(build_command)
 
         simulator_framework="#{build_path}/#{build_config}-iphonesimulator/#{build_target}/#{build_target}.framework"
