@@ -5,10 +5,14 @@ module Fastlane
         build_target = params[:project]
 
         current_path = Dir.pwd
-        # 删除当前目录旧的framework和dsym文件
+        # 删除当前目录旧的framework, xcframewor和dsym文件
         framework = "#{current_path}/fmk/#{build_target}.framework"
         if File.exist?(framework)
           FileUtils.rm_rf(framework)
+        end
+        xcframework = "#{current_path}/fmk/#{build_target}.xcframework"
+        if File.exist?(xcframework)
+          FileUtils.rm_rf(xcframework)
         end
         dsym = "#{current_path}/fmk/#{build_target}.framework.dSYM"
         if File.exist?(dsym)
@@ -68,10 +72,9 @@ module Fastlane
         end
 
         # 生成xcframewor
-        xc_framework="#{current_path}/fmk/#{build_target}.xcframework"
         create_xcframework(
             frameworks:[target_framework,simulator_framework], # 两个Framework
-            output:xc_framework # 输出路径
+            output:xcframework # 输出路径
         )
 
         # 合并真机和模拟器二进制文件
