@@ -72,7 +72,7 @@ module Fastlane
         end
 
         # 生成xcframewor
-        Actions.create_xcframework(
+        Actions::CreateXcframeworkAction.run(
             frameworks:[target_framework,simulator_framework], # 两个Framework
             output:xcframework # 输出路径
         )
