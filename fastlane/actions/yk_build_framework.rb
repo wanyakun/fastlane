@@ -58,21 +58,21 @@ module Fastlane
 
           #merge swift pod header file
           rename_iphoneos_header_file_command = "mv #{target_framework}/Headers/#{build_target}-Swift.h #{target_framework}/Headers/#{build_target}-Swift-iphoneos.h"
-          Action.sh(rename_iphoneos_header_file_command)
+          Actions.sh(rename_iphoneos_header_file_command)
           rename_simulator_header_file_command = "cp #{simulator_framework}/Headers/#{build_target}-Swift.h #{target_framework}/Headers/#{build_target}-Swift-iphonesimulator.h"
-          Action.sh(rename_simulator_header_file_command)
+          Actions.sh(rename_simulator_header_file_command)
 
           merged_header_file_name = "#{target_framework}/Headers/#{build_target}-Swift.h"
-          Action.sh("echo '#if __x86_64__ || __i386__ ' > #{merged_header_file_name}")
-          Action.sh("echo '#include \"#{build_target}-Swift-iphonesimulator.h\"' >> #{merged_header_file_name}")
-          Action.sh("echo '#else' >> #{merged_header_file_name}")
-          Action.sh("echo '#include \"#{build_target}-Swift-iphoneos.h\"' >> #{merged_header_file_name}")
-          Action.sh("echo '#endif' >> #{merged_header_file_name}")
+          Actions.sh("echo '#if __x86_64__ || __i386__ ' > #{merged_header_file_name}")
+          Actions.sh("echo '#include \"#{build_target}-Swift-iphonesimulator.h\"' >> #{merged_header_file_name}")
+          Actions.sh("echo '#else' >> #{merged_header_file_name}")
+          Actions.sh("echo '#include \"#{build_target}-Swift-iphoneos.h\"' >> #{merged_header_file_name}")
+          Actions.sh("echo '#endif' >> #{merged_header_file_name}")
 
         end
 
         # 生成xcframewor
-        create_xcframework(
+        Actions.create_xcframework(
             frameworks:[target_framework,simulator_framework], # 两个Framework
             output:xcframework # 输出路径
         )
