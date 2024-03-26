@@ -67,6 +67,13 @@ module Fastlane
 
         end
 
+        # 生成xcframewor
+        xc_framework="#{current_path}/fmk/#{build_target}.xcframework"
+        create_xcframework(
+            frameworks:[target_framework,simulator_framework], # 两个Framework
+            output:xc_framework # 输出路径
+        )
+
         # 合并真机和模拟器二进制文件
         lipo_command = "lipo -create -output #{target_framework}/#{build_target} #{simulator_framework}/#{build_target} #{target_framework}/#{build_target}"
         Actions.sh(lipo_command)
